@@ -4,259 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crypto Futures Trading Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/chart.js" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-
-        body {
-            background: #0f172a;
-            color: #fff;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .balance-card {
-            background: #1e293b;
-            padding: 25px;
-            border-radius: 10px;
-            width: 300px;
-        }
-
-        .balance-card h2 {
-            color: #94a3b8;
-            margin-bottom: 10px;
-        }
-
-        .balance-amount {
-            font-size: 2.5em;
-            color: #2dd4bf;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 25px;
-        }
-
-        .chart-container {
-            background: #1e293b;
-            padding: 20px;
-            border-radius: 10px;
-            height: 400px;
-        }
-
-        .trades-section {
-            background: #1e293b;
-            padding: 20px;
-            border-radius: 10px;
-        }
-
-        .trade-card {
-            background: #0f172a;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-        }
-
-        .trade-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 5px;
-            margin-right: 15px;
-        }
-
-        .trade-info {
-            flex: 1;
-        }
-
-        .profit {
-            color: #10b981;
-        }
-
-        .loss {
-            color: #ef4444;
-        }
-
-        .csv-buttons {
-            margin: 20px 0;
-            display: flex;
-            gap: 10px;
-        }
-
-        button {
-            background: #2dd4bf;
-            color: #0f172a;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        @media (max-width: 768px) {
-            .grid-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .balance-card {
-                width: 100%;
-            }
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/chart.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="container">
+        <!-- Dashboard Header -->
         <div class="dashboard-header">
-            <h1>Trading Dashboard</h1>
-            <div class="balance-card">
-                <h2>Total Balance</h2>
-                <div class="balance-amount">$<span id="totalBalance">0.00</span></div>
-            </div>
-        </div>
-
-        <div class="csv-buttons">
-            <button onclick="importCSV()">Import CSV</button>
-            <button onclick="exportCSV()">Export CSV</button>
-        </div>
-
-        <div class="grid-container">
-            <div class="chart-container">
-                <canvas id="performanceChart"></canvas>
+            <div class="header-group">
+                <h1>Daniyal's Trading Dashboard</h1>
+                <small>Last Updated: 2/19/2025, 1:24:50 AM</small>
             </div>
             
+            <div class="balance-card">
+                <h2>Total Balance</h2>
+                <div class="balance-amount">
+                    $<span id="totalBalance">5.20</span>
+                </div>
+                <small style="color: #94a3b8">Total Profit: $5.20</small>
+            </div>
+        </div>
+
+        <!-- Metrics Row -->
+        <div class="metrics-container">
+            <div class="metric-card">
+                <h3>24h P&L</h3>
+                <div class="metric-value positive" id="24hProfit">$0.23</div>
+                <div class="positive">+0.00%</div>
+            </div>
+            <div class="metric-card">
+                <h3>Total Trades</h3>
+                <div class="metric-value" id="totalTrades">1</div>
+                <div class="neutral">Active: 0</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid-container">
+            <!-- Chart Section -->
+            <div class="chart-container">
+                <div class="time-filter">
+                    <button class="active" onclick="updateChartData('24h')">24H</button>
+                    <button onclick="updateChartData('7d')">7D</button>
+                    <button onclick="updateChartData('1m')">1M</button>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Trades Section -->
             <div class="trades-section">
-                <h3>Active Trades</h3>
+                <h3 style="margin-bottom: 15px;">Active Trades</h3>
                 <div id="activeTrades"></div>
                 
-                <h3 style="margin-top: 20px;">Completed Trades</h3>
+                <h3 style="margin: 20px 0 15px 0;">Completed Trades</h3>
                 <div id="completedTrades"></div>
             </div>
         </div>
     </div>
 
+    <!-- Keep your existing JavaScript here -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <script>
-        // Sample data - Update this array manually to add/update trades
-        let tradeData = [
-            {
-                id: 1,
-                type: 'BTC/USDT',
-                status: 'active',
-                margin: 5000,
-                leverage: 20,
-                profit: 1200,
-                image: 'https://via.placeholder.com/50',
-                entryPrice: 42000,
-                exitPrice: 43200,
-                direction: 'long'
-            },
-            // Add more trades here...
-        ];
-
-        // Initialize chart
-        const ctx = document.getElementById('performanceChart').getContext('2d');
-        const performanceChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Portfolio Value',
-                    data: [10000, 11500, 12000, 13200, 14000, 15200],
-                    borderColor: '#2dd4bf',
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    }
-                }
-            }
-        });
-
-        function updateDashboard() {
-            // Calculate total balance
-            const totalBalance = tradeData.reduce((acc, trade) => acc + trade.margin + trade.profit, 0);
-            document.getElementById('totalBalance').textContent = totalBalance.toFixed(2);
-
-            // Render trades
-            renderTrades('active');
-            renderTrades('completed');
-        }
-
-        function renderTrades(status) {
-            const containerId = status === 'active' ? 'activeTrades' : 'completedTrades';
-            const trades = tradeData.filter(trade => trade.status === status);
-            
-            const html = trades.map(trade => `
-                <div class="trade-card">
-                    <img src="${trade.image}" class="trade-image" alt="Trade">
-                    <div class="trade-info">
-                        <h4>${trade.type} (${trade.direction})</h4>
-                        <p>Margin: $${trade.margin} | Leverage: ${trade.leverage}x</p>
-                        <p class="${trade.profit >= 0 ? 'profit' : 'loss'}">
-                            P&L: $${trade.profit.toFixed(2)}
-                        </p>
-                    </div>
-                </div>
-            `).join('');
-
-            document.getElementById(containerId).innerHTML = html;
-        }
-
-        function exportCSV() {
-            const csv = Papa.unparse(tradeData);
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'trades-export.csv';
-            a.click();
-        }
-
-        function importCSV() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.csv';
-            
-            input.onchange = e => {
-                const file = e.target.files[0];
-                Papa.parse(file, {
-                    complete: (result) => {
-                        tradeData = result.data;
-                        updateDashboard();
-                    }
-                });
-            };
-            
-            input.click();
-        }
-
-        // Initial load
-        updateDashboard();
-    </script>
+    <script src="/script.js"></script>
 </body>
 </html>

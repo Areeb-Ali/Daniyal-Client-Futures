@@ -1,0 +1,221 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background: #0f172a;
+    color: #fff;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.dashboard-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 30px;
+}
+
+.header-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.balance-card {
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 10px;
+    min-width: 280px;
+}
+
+.balance-card h2 {
+    color: #94a3b8;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.balance-amount {
+    font-size: 2.2em;
+    color: #2dd4bf;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+    margin-top: 20px;
+}
+
+/* Update chart container styles */
+.chart-container {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+    min-height: 400px;
+    height: 60vh; /* Use viewport height units */
+    max-height: 600px; /* Maximum chart height */
+}
+
+/* Add this for chart responsiveness */
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+#comparisonChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.trades-section {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+    height: 400px;
+    overflow-y: auto;
+}
+
+.metrics-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.metric-card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 1.6em;
+    margin: 10px 0;
+}
+
+.time-filter {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.time-filter button {
+    background: #334155;
+    color: #94a3b8;
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.time-filter button.active {
+    background: #2dd4bf;
+    color: #0f172a;
+}
+
+.trade-card {
+    background: #0f172a;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 15px;
+    align-items: center;
+}
+
+.trade-info h4 {
+    margin-bottom: 5px;
+    color: #94a3b8;
+}
+
+.positive {
+    color: #10b981;
+    font-weight: bold;
+}
+
+.loss {
+    color: #ef4444;
+    font-weight: bold;
+}
+
+@media (max-width: 1200px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+
+    .trades-section {
+        height: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+    }
+
+    .balance-card {
+        width: 100%;
+    }
+
+    .metric-card {
+        padding: 15px;
+    }
+
+    .time-filter {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+
+    .balance-amount {
+        font-size: 1.8em;
+    }
+
+    .trade-card {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .chart-container {
+        height: 50vh;
+        min-height: 300px;
+    }
+    
+    #comparisonChart {
+        aspect-ratio: 1.5;
+    }
+}
+
+@media (max-width: 480px) {
+    .chart-container {
+        height: 45vh;
+        min-height: 250px;
+    }
+    
+    #comparisonChart {
+        aspect-ratio: 1.2;
+    }
+}
